@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WEENG CLASS</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Titan+One&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Nunito', sans-serif;
+      background: #f0ead8;
+      overflow-x: hidden;
+    }
+
+    /* ══ 페이지 시스템 ══
+       .page 는 기본 숨김, .page.active 만 보임 */
+    .page {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      background: #f0ead8;
+      flex-direction: column;
+    }
+    .page.active { display: flex; }
+
+    /* 하단 nav 있는 페이지 */
+    .page.has-nav { padding-bottom: 90px; }
+
+    /* ── HEADER ── */
+    .lk-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px 12px;
+      gap: 10px;
+    }
+
+    .lk-avatar {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: #f5a623;
+      border: 2px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; cursor: pointer; flex-shrink: 0;
+    }
+
+    .lk-logo {
+      font-size: 2.5vw; font-weight: 800; color: white;
+      flex: 1; text-align: center;
+    }
+
+    .lk-header-right {
+      display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    }
+
+    /* 뒤로가기 버튼 */
+    .lk-back-btn {
+      background: rgba(255,255,255,0.15); border: none; color: white;
+      border-radius: 50%; width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 20px; line-height: 1;
+      transition: background 0.15s; flex-shrink: 0;
+    }
+    .lk-back-btn:hover { background: rgba(255,255,255,0.28); }
+
+    .lk-plus-btn {
+      background: #5c6ef8; color: white; border: none;
+      border-radius: 24px; padding: 8px 16px;
+      font-size: 1.8vw; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; gap: 5px;
+      font-family: 'Nunito', sans-serif;
+      transition: background 0.15s, transform 0.1s; white-space: nowrap;
+    }
+    .lk-plus-btn:hover  { background: #4a5ee0; }
+    .lk-plus-btn:active { transform: scale(0.97); }
+    .lk-plus-btn .star  { color: #ffd700; }
+
+    .lk-icon-btn {
+      background: rgba(255, 255, 255, 0); border: none; color: white;
+      border-radius: 50%; width: 3.5vw; height: 3.5vw;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.8vw; transition: background 0.15s; flex-shrink: 0;
+      border: 1.5px solid rgba(255,255,255,0.6) !important;
+    }
+    .lk-icon-btn:hover { background: rgba(255,255,255,0.28); }
+
+    /* ── SECTION ── */
+    .lk-section { padding: 6px 24px 20px; }
+    .lk-section-title {
+      font-size: 1.6vw; font-weight: 800; color: white; margin-bottom: 1.5%;
+    }
+
+    /* ── SLIDER ── */
+    .lk-slider-wrap {
+      overflow: hidden; cursor: grab; user-select: none; -webkit-user-select: none;
+      /* 카드 그림자가 잘리지 않도록 상하 여백 확보 */
+      padding: 8px 0 16px;
+      margin: -8px 0 -16px;
+    }
+    .lk-slider-wrap.dragging { cursor: grabbing; }
+
+    .lk-slider-track {
+      display: flex; gap: 2%;
+      transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+      will-change: transform;
+    }
+    .lk-slider-track.no-anim { transition: none; }
+
+    /* ── 레벨 카드 ── */
+    .lk-card {
+      flex: 0 0 230px; height: 170px;  /* 모바일·태블릿 기본 */
+      border-radius: 20px; overflow: hidden; position: relative;
+      cursor: pointer;
+      /* 입체감 — 아래쪽 진한 그림자 + 좌우 퍼지는 은은한 그림자 */
+      box-shadow:
+        0 8px 0 rgba(0,0,0,0.18),
+        0 12px 24px rgba(0,0,0,0.22),
+        0 4px 8px rgba(0,0,0,0.12);
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.18s ease;
+    }
+
+    .lk-card:hover {
+      transform: translateY(-6px);
+      box-shadow:
+        0 14px 0 rgba(0,0,0,0.16),
+        0 20px 36px rgba(0,0,0,0.22),
+        0 6px 12px rgba(0,0,0,0.1);
+    }
+    .lk-card:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow:
+        0 4px 0 rgba(0,0,0,0.18),
+        0 6px 12px rgba(0,0,0,0.18);
+    }
+    .lk-card-bg {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center; font-size: 56px;
+      position: relative;
+    }
+    .lk-card-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .lk-card-label .tag {
+      font-family: 'Fredoka', cursive;
+      font-size: 2.2rem; /* 모바일·태블릿 */
+      font-weight: 700;
+      color: rgb(157, 8, 243);
+      paint-order: stroke fill;
+      -webkit-text-stroke: 7px rgba(0,0,0,0.3);
+      text-shadow:
+        3px  3px 0 rgba(0,0,0,0.25),
+       -3px  3px 0 rgba(0,0,0,0.25),
+        3px -3px 0 rgba(0,0,0,0.25),
+       -3px -3px 0 rgba(0,0,0,0.25);
+      letter-spacing: 3px;
+    }
+
+    /* 레벨별 외곽선 색상 — 카드 배경보다 진한 계열 */
+    .card-pink   .lk-card-label .tag {
+      color: #ff00b3;
+      -webkit-text-stroke: 7px #ffffff;
+      text-shadow: 3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff, 4px 0 0 #fff, -4px 0 0 #fff, 0 4px 0 #fff, 0 -4px 0 #fff;
+    }
+    .card-blue   .lk-card-label .tag {
+      color: #ff5a6a;
+      -webkit-text-stroke: 7px #fff;
+      text-shadow: 3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff, 4px 0 0 #fff, -4px 0 0 #fff, 0 4px 0 #fff, 0 -4px 0 #fff;
+    }
+    .card-purple .lk-card-label .tag {
+      color: #a8c84a;
+      -webkit-text-stroke: 7px #fff;
+      text-shadow: 3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff, 4px 0 0 #fff, -4px 0 0 #fff, 0 4px 0 #fff, 0 -4px 0 #fff;
+    }
+    .card-orange .lk-card-label .tag {
+      color: #4fc3f7;
+      -webkit-text-stroke: 7px #fff;
+      text-shadow: 3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff, 4px 0 0 #fff, -4px 0 0 #fff, 0 4px 0 #fff, 0 -4px 0 #fff;
+    }
+
+    .card-pink   { background: linear-gradient(145deg,#ff6b9d,#c2185b); }
+    .card-blue   { background: linear-gradient(145deg,#ff5a6a,#cc0e1f); }
+    .card-purple { background: linear-gradient(145deg,#a8c84a,#5a8a1f); }
+    .card-orange { background: linear-gradient(145deg,#4fc3f7,#0d47a1); }
+
+    /* 3D SVG 카드 */
+    .lk-card-bg svg {
+      width: 100%; height: 100%;
+      display: block;
+    }
+    .card-green  { background: linear-gradient(135deg,#66bb6a,#c8e6c9); }
+    .card-teal   { background: linear-gradient(135deg,#26c6da,#b2ebf2); }
+    .card-red    { background: linear-gradient(135deg,#ef5350,#ffcdd2); }
+    .card-indigo { background: linear-gradient(135deg,#5c6bc0,#c5cae9); }
+
+    /* ── DOTS ── */
+    .lk-dots {
+      display: flex; justify-content: center; gap: 6px; margin-top: 3.5%;
+    }
+    .lk-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,0.28);
+      transition: background 0.2s, width 0.25s, border-radius 0.25s;
+    }
+    .lk-dot.active { background: white; width: 22px; border-radius: 4px; }
+
+    /* ── 원형 호수 아이템 ── */
+    .lk-world-item {
+      flex: 0 0 80px;
+      display: flex; flex-direction: column; align-items: center; gap: 0;
+      cursor: pointer;
+    }
+    .lk-world-circle {
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 1.6rem; font-weight: 800; color: white;
+      border: 3px solid rgb(255 255 255 / 78%);
+      box-shadow: 0 4px 4px rgba(0,0,0,0.2);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .lk-world-item:active .lk-world-circle { transform: scale(0.93); }
+    .lk-world-item.selected .lk-world-circle {
+      border-color: #ffd700; box-shadow: 0 0 0 3px rgba(255,215,0,0.45);
+    }
+    .w-pink   { background:#9272ff; } .w-blue   { background:#0e9aff; }
+    .w-orange { background:#03cb8f; } .w-green  { background:#9cc624; }
+    .w-purple { background:#ffa012; } .w-teal   { background:#ff7223; }
+    .w-red    { background:#fe4848; } .w-amber  { background:#ff79e1; }
+
+    .lk-world-label { display: none; }
+
+    /* ══ PAGE 1 크림 베이지 테마 ══ */
+    #page-home {
+      background: linear-gradient(180deg, #341e60 0%, #341e60 100%);
+    }
+    #page-home .lk-header {
+      background: #f0ead8;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    #page-home .lk-logo {
+      color: #3a2e1e;
+    }
+    #page-home .lk-section-title {
+      color: #fff;
+    }
+    #page-home .lk-section-title::before {
+      background: #c97a3a;
+    }
+    #page-home .lk-dot {
+      background: rgba(245, 245, 245, 0.795);
+    }
+    #page-home .lk-dot.active {
+      background: rgba(245, 245, 245, 0.795); width: 22px; border-radius: 4px;
+    }
+    #page-home .lk-plus-btn {
+      background: #3a2e1e;
+      border: none;
+      color: #f0ead8;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+    }
+    #page-home .lk-plus-btn:hover { background: #52412a; }
+    #page-home .lk-plus-btn .star { color: #f5c842; }
+    #page-home .lk-icon-btn {
+      background: rgba(58,46,30,0.1);
+      color: #3a2e1e;
+    }
+    #page-home .lk-icon-btn:hover { background: rgba(58,46,30,0.18); }
+    #page-home .lk-avatar {
+      background: #c97a3a;
+      border-color: #f0ead8;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    /* ── Page 1 상단 배너 ── */
+    /* 헤더 + 배너 묶음 래퍼 */
+    #home-header-wrap {
+      position: relative;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    /* 기본값 — ~1024px (모바일·태블릿·좁은 PC) */
+    #home-banner {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+    }
+    #home-banner img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+    #home-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 22px;
+      background: #341e60;
+      border-radius: 22px 22px 0 0;
+    }
+    /* 헤더를 배너 위에 absolute로 띄움 */
+    #home-header-wrap .lk-header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 10;
+      background: transparent !important;
+      border-bottom: none !important;
+    }
+    /* 헤더가 투명하므로 텍스트/버튼 흰색으로 */
+    #home-header-wrap .lk-logo { color: white !important; }
+
+    /* 로고 이미지 + 텍스트 묶음 */
+    .home-brand-wrap {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .home-logo-img {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .home-brand-name {
+      font-family: 'Baloo 2', 'Noto Sans KR', cursive;
+      font-weight: 800;
+      font-size: 20px;
+      color: white;
+      white-space: nowrap;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.35);
+    }
+    #home-header-wrap .lk-plus-btn {
+      background: #6807ff !important;
+      border: 1.5px solid rgba(255,255,255,0.6) !important;
+      color: white !important;
+      backdrop-filter: blur(6px);
+    }
+    #home-header-wrap .lk-icon-btn {
+      background: rgba(255,255,255,0.0) !important;
+      color: white !important;
+    }
+    #home-header-wrap .lk-avatar {
+      border-color: white !important;
+    }
+
+
+    /* ── 연령 배지 (카드 하단 우측 동그라미) ── */
+    .card-age-badge {
+      position: absolute;
+      bottom: 10px; right: 10px;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: white;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 13px; font-weight: 800;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+      border: 2.5px solid rgba(255,255,255,0.8);
+      z-index: 5;
+      line-height: 1;
+    }
+    .card-pink   .card-age-badge { color: #c2185b; }
+    .card-blue   .card-age-badge { color: #cc0e1f; }
+    .card-purple .card-age-badge { color: #5a8a1f; }
+    .card-orange .card-age-badge { color: #0d47a1; }
+
+
+
+
+
+    /* PC (1025px 이상)  */
+    @media (min-width: 660px) {
+       #home-banner { height: 170px; }
+       .lk-section-title {font-size: 1.15rem; margin-bottom:1.8%;}
+       .lk-card{flex: 0 0 180px; height: 130px;}
+       .lk-card-label .tag{font-size: 1.6rem;}
+
+       .lk-plus-btn {font-size: 1.1rem;}
+       .lk-icon-btn {font-size: 1.4rem; width:38px; height:38px;}
+       .card-age-badge{font-size:1rem; width: 38px; height: 38px;}
+
+       .lk-logo {font-size: 2.2rem;}
+       
+    }
+    @media (min-width: 933px) {
+      .lk-card { flex: 0 0 325px; height: 230px; }
+      #home-banner { height: 200px; }
+      .lk-card-label .tag{font-size: 2.0rem;}
+      .card-age-badge { width: 62px; height: 62px; font-size: 1.5rem; bottom: 14px; right: 14px; }
+    }
+
+    /* 1025px ~ 1200px (PC)  */
+    @media (min-width: 1025px) and (max-width: 1199px) {
+      #home-banner { height: 350px; }
+      .lk-card-label .tag{font-size: 2.9rem;}
+    }
+    /* 1200px 이상 (PC 넓음) → 100% */
+    @media (min-width: 1200px) {
+      #home-header-wrap { height: clamp(350px, 45vh, 600px); }
+      #home-banner { height: 100%; }
+      .lk-card-label .tag{font-size: 3.5rem;}
+    }
+
+
+
+
+    /* ── 세로 모드 차단 (태블릿·모바일) ── */
+    @media (max-width: 932px) and (orientation: portrait) {
+      /* 전체 화면을 90도 회전시켜 가로 모드로 강제 */
+      body {
+        transform: rotate(90deg);
+        transform-origin: left top;
+        width: 100vh;
+        height: 100vw;
+        overflow-x: hidden;
+        position: absolute;
+        top: 100%;
+        left: 0;
+      }
+
+
+    }
+    /* 캐릭터 — img/svg 교체 가능 */
+
+    /* ── PAGE 2 핑크 테마 ── */
+    #page-worlds {
+      background: linear-gradient(#ff978e);
+    }
+    #page-worlds .lk-header {
+      background: transparent;
+    }
+    #page-worlds .lk-logo {
+      color: white;
+      font-family: 'Fredoka', cursive;
+      font-weight: 700;
+      background: rgba(255,255,255,0.28);
+      backdrop-filter: blur(6px);
+      border: 1.5px solid rgba(255,255,255,0.55);
+      padding: 6px 22px;
+      border-radius: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      flex: 0 0 auto;         /* flex 늘어남 방지 */
+      width: fit-content;     /* 글자 너비만큼 */
+      text-align: center;
+    }
+    #page-worlds .lk-back-btn {
+      background: rgba(255,255,255,0.25); color: white;
+    }
+    #page-worlds .lk-section-title {
+      color: white;
+    }
+    #page-worlds .lk-section-title::before {
+      background: rgba(255,255,255,0.7);
+    }
+    #page-worlds .lk-dot {
+      background: rgba(255,255,255,0.35);
+    }
+    #page-worlds .lk-dot.active {
+      background: white; width: 22px; border-radius: 4px;
+    }
+    #page-worlds .lk-world-label { color: white; }
+
+    /* ── FIXED BOTTOM NAV ── */
+    .lk-bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+      background: rgba(10,5,30,0.97);
+      border-top: 1px solid rgba(255,255,255,0.12);
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 10px 0 max(14px, env(safe-area-inset-bottom));
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      /* 기본 숨김 */
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .lk-bottom-nav.visible { transform: translateY(0); }
+
+    .lk-nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; padding: 6px 0; border-radius: 20px;
+      transition: background 0.15s; flex: 1;
+    }
+    .lk-nav-item:hover  { background: rgba(255,255,255,0.07); }
+    .lk-nav-item.active { background: rgba(255,255,255,0.13); }
+
+    .lk-nav-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 19px;
+    }
+    .ni-Level1 { background: linear-gradient(135deg,#ff6b9d,#c2185b); }
+    .ni-Level2 { background: linear-gradient(135deg,#ff5a6a,#cc0e1f); }
+    .ni-Level3 { background: linear-gradient(135deg,#a8c84a,#5a8a1f); }
+    .ni-Level4 { background: linear-gradient(135deg,#4fc3f7,#0d47a1); }
+
+    .lk-nav-label {
+      font-size: 11px; color: rgba(255,255,255,0.55);
+      font-weight: 700; font-family: 'Nunito', sans-serif;
+    }
+    .lk-nav-item.active .lk-nav-label { color: white; }
+
+    /* ── TOAST ── */
+    .lk-toast {
+      position: fixed; bottom: 96px; left: 50%;
+      transform: translateX(-50%) translateY(14px);
+      background: rgba(0,0,0,0.82); color: white;
+      padding: 10px 22px; border-radius: 22px;
+      font-size: 13px; font-weight: 700; font-family: 'Nunito', sans-serif;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s, transform 0.22s;
+      white-space: nowrap; z-index: 1000;
+    }
+    .lk-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ══ PAGE 3 히어로 배너 ══ */
+    #page-content {
+      background: #1e8c46;
+      overflow-y: auto;
+    }
+
+    #ct-hero {
+      position: relative;
+      width: 100%;
+      min-height: 200px;
+      background: linear-gradient(135deg, #e91e8c 0%, #c2185b 40%, #880e4f 100%);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* 배경 반짝이 효과 */
+    #ct-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.18) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.12) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    /* 상단 바 (뒤로가기 + 우측 버튼) */
+    #ct-hero-bar {
+      position: relative; z-index: 10;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 0;
+    }
+    #ct-hero-actions {
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* 배너 본문 */
+    #ct-hero-body {
+      position: relative; z-index: 5;
+      display: flex; align-items: flex-end;
+      padding: 10px 20px 20px;
+      gap: 0;
+    }
+
+    /* 좌측 타이틀 */
+    #ct-hero-title {
+      flex: 1;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    #ct-hero-label {
+      font-size: 11px; font-weight: 800;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    #ct-hero-name {
+      font-size: 32px; font-weight: 800;
+      color: white;
+      line-height: 1.1;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.25);
+      font-style: italic;
+    }
+    #ct-hero-issue {
+      display: inline-block;
+      margin-top: 6px;
+      background: rgba(255,255,255,0.25);
+      border: 1.5px solid rgba(255,255,255,0.5);
+      color: white;
+      font-size: 13px; font-weight: 800;
+      padding: 3px 14px; border-radius: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* 우측 이미지 영역 */
+    #ct-hero-img {
+      flex: 0 0 160px;
+      height: 145px;
+      position: relative;
+    }
+    #ct-hero-img-inner {
+      width: 100%; height: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      /* 이미지 없을 때 배경 */
+      background: rgba(255,255,255,0.15);
+      border: 2px dashed rgba(255,255,255,0.35);
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* 실제 이미지가 있으면 */
+    #ct-hero-img-inner img {
+      width: 100%; height: 100%; object-fit: cover;
+      border-radius: 14px;
+    }
+    #ct-hero-emoji {
+      font-size: 64px; line-height: 1;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+
+    /* 배너 하단 곡선 (섹션과 연결) */
+    #ct-hero::after {
+      content: '';
+      position: absolute; bottom: -1px; left: 0; right: 0;
+      height: 24px;
+      background: #1e8c46;
+      border-radius: 24px 24px 0 0;
+    }
+
+    /* 섹션 영역 */
+    #content-sections {
+      background: #1e8c46;
+      flex: 1;
+      padding-bottom: 8px;
+    }
+
+    #page-content .lk-header { background: #1a7a3c; }
+
+    .ct-section { padding: 14px 20px 4px; }
+
+    .ct-section-title {
+      font-size: 15px; font-weight: 800; color: white;
+      margin-bottom: 12px; letter-spacing: -0.2px;
+    }
+    .ct-section-title span { font-style: italic; }
+
+    /* 콘텐츠 카드 — 이미지 참고 큰 가로 카드 */
+    .ct-card {
+      flex: 0 0 260px; height: 155px;
+      border-radius: 18px; overflow: hidden; position: relative;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .ct-card:active { transform: scale(0.97); }
+
+    .ct-card-inner {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: flex-end;
+      padding: 14px 16px;
+      position: relative;
+    }
+
+    /* 카드 타이틀 (대문자 굵게, 이미지 스타일) */
+    .ct-card-title {
+      font-size: 22px; font-weight: 800; color: white; line-height: 1.15;
+      text-transform: uppercase;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 1;
+    }
+    .ct-card-sub {
+      font-size: 11px; font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      margin-top: 4px; z-index: 1;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    /* 카드 이모지 장식 (우상단) */
+    .ct-card-deco {
+      position: absolute; top: 10px; right: 14px;
+      font-size: 52px; line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+
+    /* 섹션별 카드 배경색 */
+    .cc-yellow  { background: linear-gradient(135deg,#FFD600,#FF9800); }
+    .cc-sky     { background: linear-gradient(135deg,#29B6F6,#0288D1); }
+    .cc-pink    { background: linear-gradient(135deg,#F06292,#C2185B); }
+    .cc-purple  { background: linear-gradient(135deg,#AB47BC,#6A1B9A); }
+    .cc-green   { background: linear-gradient(135deg,#66BB6A,#2E7D32); }
+    .cc-orange  { background: linear-gradient(135deg,#FF7043,#BF360C); }
+    .cc-teal    { background: linear-gradient(135deg,#26C6DA,#00838F); }
+    .cc-indigo  { background: linear-gradient(135deg,#5C6BC0,#283593); }
+    .cc-red     { background: linear-gradient(135deg,#EF5350,#B71C1C); }
+    .cc-lime    { background: linear-gradient(135deg,#D4E157,#827717); }
+
+    /* 구분선 */
+    .ct-divider {
+      height: 1px; background: rgba(255,255,255,0.15);
+      margin: 8px 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 세로 모드 차단 오버레이 (태블릿·모바일 세로 방향일 때만 표시) -->
+<div id="rotate-overlay">
+  <div id="rotate-box">
+    <div id="rotate-icon">📱</div>
+    <div id="rotate-msg">화면을 가로로 돌려주세요</div>
+    <div id="rotate-sub">Please rotate your device</div>
+  </div>
+</div>
+
+<style>
+  #rotate-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 9999;
+    background: #2d1b6b;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+  #rotate-box {
+    text-align: center;
+    color: white;
+  }
+  #rotate-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    animation: rotateAnim 1.5s ease-in-out infinite;
+  }
+  #rotate-msg {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 20px; font-weight: 800;
+    margin-bottom: 8px;
+  }
+  #rotate-sub {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px; color: rgba(255,255,255,0.6);
+  }
+  @keyframes rotateAnim {
+    0%   { transform: rotate(0deg); }
+    40%  { transform: rotate(90deg); }
+    60%  { transform: rotate(90deg); }
+    100% { transform: rotate(0deg); }
+  }
+  /* 세로 모드이고 태블릿·모바일일 때만 오버레이 표시 */
+  @media (max-width: 932px) and (orientation: portrait) {
+    #rotate-overlay { display: flex; }
+    body > *:not(#rotate-overlay) { visibility: hidden; }
+  }
+</style>
+
+<!-- ══════════════════════
+     PAGE 1 : 홈 (레벨 선택)
+     하단 nav 없음
+══════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- 헤더 + 배너 래퍼: 배너가 배경, 헤더가 그 위에 absolute -->
+  <div id="home-header-wrap">
+    <div id="home-banner"><img src="https://somsomsom1.github.io/wechange-open/test/others/upper_banner_001.png" alt="WEENG CLASS banner"></div>
+    <div class="lk-header">
+      <!-- 로고 이미지 + 위잉클래스 텍스트 묶음 -->
+      <div class="home-brand-wrap" id="avatar-btn">
+        <img src="https://somsomsom1.github.io/wechange-open/test/logo/logo_profile_red_bee_02.png" alt="위잉클래스" class="home-logo-img">
+        <span class="home-brand-name">위잉클래스</span>
+      </div>
+      <div class="lk-header-right">
+        <button class="lk-plus-btn" id="plus-btn">My 학습 보기 <span class="star">✦</span></button>
+        <button class="lk-icon-btn" id="search-btn" aria-label="검색">🔍</button>
+        <button class="lk-icon-btn" id="heart-btn" aria-label="즐겨찾기">🤍</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="lk-section">
+    <div class="lk-section-title">연령별 맞춤 수업</div>
+    <div class="lk-slider-wrap" id="recommend-wrap">
+      <div class="lk-slider-track" id="recommend-row"></div>
+    </div>
+    <div class="lk-dots" id="recommend-dots"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════
+     PAGE 2 : 1호~10호
+     하단 nav 있음
+══════════════════════ -->
+<div class="page has-nav" id="page-worlds">
+  <div class="lk-header">
+    <button class="lk-back-btn" id="back-btn">&#8592;</button>
+    <div class="lk-logo" id="worlds-logo">Level 1</div>
+    <div style="width:38px;flex-shrink:0;"></div>
+  </div>
+
+  <div class="lk-section">
+    <div class="lk-section-title" id="worlds-title">진도</div>
+    <div class="lk-slider-wrap" id="worlds-wrap">
+      <div class="lk-slider-track" id="worlds-row"></div>
+    </div>
+    <div class="lk-dots" id="worlds-dots"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════
+     PAGE 3 : 호수 콘텐츠 (7섹션)
+     초록 배경, 각 섹션 가로 슬라이더
+══════════════════════ -->
+<div class="page has-nav" id="page-content">
+
+  <!-- 히어로 배너 (타이틀 이미지 영역) -->
+  <div id="ct-hero">
+    <!-- 뒤로가기 + 우측 버튼 오버레이 -->
+    <div id="ct-hero-bar">
+      <button class="lk-back-btn" id="back-btn2">&#8592;</button>
+      <div id="ct-hero-actions">
+        <button class="lk-plus-btn" style="font-size:12px;padding:6px 14px;">Plus 이용해 보기 <span class="star">✦</span></button>
+        <button class="lk-icon-btn">⬇️</button>
+      </div>
+    </div>
+
+    <!-- 배너 본문: 좌=타이틀, 우=캐릭터 이미지 공간 -->
+    <div id="ct-hero-body">
+      <!-- 좌측 타이틀 -->
+      <div id="ct-hero-title">
+        <div id="ct-hero-label">WEENG CLASS</div>
+        <div id="ct-hero-name">Level 1</div>
+        <div id="ct-hero-issue">1호</div>
+      </div>
+      <!-- 우측 이미지 자리 (실제 서비스에서 <img src="..."> 교체) -->
+      <div id="ct-hero-img">
+        <div id="ct-hero-img-inner">
+          <!-- 이미지 없을 때 이모지 플레이스홀더 -->
+          <span id="ct-hero-emoji">🎓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7개 섹션 슬라이더 영역 -->
+  <div id="content-sections">
+    <!-- JS로 렌더 -->
+  </div>
+
+</div>
+
+<!-- ══════════════════════
+     FIXED BOTTOM NAV
+     page-worlds 진입 시에만 표시
+══════════════════════ -->
+<div class="lk-bottom-nav" id="bottom-nav">
+  <div class="lk-nav-item" data-tab="Level1">
+    <div class="lk-nav-icon ni-Level1">🧩</div>
+    <div class="lk-nav-label">Level1</div>
+  </div>
+  <div class="lk-nav-item" data-tab="Level2">
+    <div class="lk-nav-icon ni-Level2">▶️</div>
+    <div class="lk-nav-label">Level2</div>
+  </div>
+  <div class="lk-nav-item" data-tab="Level3">
+    <div class="lk-nav-icon ni-Level3">📖</div>
+    <div class="lk-nav-label">Level3</div>
+  </div>
+  <div class="lk-nav-item" data-tab="Level4">
+    <div class="lk-nav-icon ni-Level4">😊</div>
+    <div class="lk-nav-label">Level4</div>
+  </div>
+</div>
+
+<div class="lk-toast" id="toast"></div>
+
+<script>
+$(function () {
+
+  /* ══ DATA ══ */
+  /* ── 레벨별 3D SVG ── */
+  var levelSVGs = {
+    Level1: `<svg viewBox="0 0 200 170" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bg1" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#ff8fba"/>
+          <stop offset="100%" stop-color="#c2185b"/>
+        </radialGradient>
+        <radialGradient id="star1" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fff9c4"/>
+          <stop offset="100%" stop-color="#ffd54f"/>
+        </radialGradient>
+        <filter id="shadow1"><feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="rgba(0,0,0,0.35)"/></filter>
+        <filter id="glow1"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- 배경 -->
+      <rect width="200" height="170" fill="url(#bg1)"/>
+      <!-- 별 장식 -->
+      <g filter="url(#glow1)">
+        <polygon points="30,20 33,29 42,29 35,35 38,44 30,38 22,44 25,35 18,29 27,29" fill="url(#star1)" opacity="0.9"/>
+        <polygon points="165,15 167,21 174,21 168,25 170,31 165,27 160,31 162,25 156,21 163,21" fill="url(#star1)" opacity="0.7" transform="scale(0.8) translate(40,5)"/>
+        <polygon points="175,55 177,61 183,61 178,65 180,71 175,67 170,71 172,65 167,61 173,61" fill="url(#star1)" opacity="0.6" transform="scale(0.6)translate(120,60)"/>
+      </g>
+      <!-- 3D 구체 (메인 오브젝트) -->
+      <defs>
+        <radialGradient id="ball1" cx="38%" cy="32%" r="60%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="40%" stop-color="#ff80ab"/>
+          <stop offset="100%" stop-color="#ad1457"/>
+        </radialGradient>
+      </defs>
+
+      <!-- 하이라이트 -->
+      <!-- Level 1 텍스트 -->
+      
+      <!-- 작은 반짝임 -->
+      <circle cx="45" cy="110" r="3" fill="rgba(255,255,255,0.6)"/>
+      <circle cx="155" cy="95" r="2" fill="rgba(255,255,255,0.5)"/>
+      <circle cx="160" cy="130" r="4" fill="rgba(255,255,255,0.4)"/>
+    </svg>`,
+
+    Level2: `<svg viewBox="0 0 200 170" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bg2" cx="50%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#ff5a6a"/>
+          <stop offset="100%" stop-color="#cc0e1f"/>
+        </radialGradient>
+        <radialGradient id="cube2a" cx="30%" cy="25%" r="70%">
+          <stop offset="0%" stop-color="#ffcdd2"/>
+          <stop offset="100%" stop-color="#c62828"/>
+        </radialGradient>
+        <radialGradient id="cube2b" cx="30%" cy="25%" r="70%">
+          <stop offset="0%" stop-color="#ef9a9a"/>
+          <stop offset="100%" stop-color="#b71c1c"/>
+        </radialGradient>
+        <filter id="shadow2"><feDropShadow dx="3" dy="5" stdDeviation="4" flood-color="rgba(0,0,0,0.4)"/></filter>
+      </defs>
+      <rect width="200" height="170" fill="url(#bg2)"/>
+      <!-- 3D 큐브 -->
+      
+      <!-- 하이라이트 -->
+      <!-- Level 2 텍스트 -->
+      
+      <circle cx="40" cy="40" r="3" fill="rgba(255,255,255,0.5)"/>
+      <circle cx="170" cy="100" r="2" fill="rgba(255,255,255,0.4)"/>
+      <circle cx="35" cy="120" r="4" fill="rgba(255,255,255,0.3)"/>
+    </svg>`,
+
+    Level3: `<svg viewBox="0 0 200 170" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bg3" cx="50%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#a8c84a"/>
+          <stop offset="100%" stop-color="#5a8a1f"/>
+        </radialGradient>
+        <radialGradient id="gem3" cx="35%" cy="28%" r="65%">
+          <stop offset="0%" stop-color="#f1f8e9"/>
+          <stop offset="35%" stop-color="#aed581"/>
+          <stop offset="100%" stop-color="#558b2f"/>
+        </radialGradient>
+        <filter id="shadow3"><feDropShadow dx="2" dy="5" stdDeviation="4" flood-color="rgba(0,0,0,0.45)"/></filter>
+        <filter id="glow3"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="200" height="170" fill="url(#bg3)"/>
+
+      
+
+      <!-- 반짝임 -->
+      <g filter="url(#glow3)" fill="white">
+        <polygon points="38,35 40,43 48,35 40,27" opacity="0.8"/>
+        <polygon points="160,25 162,31 168,25 162,19" opacity="0.7"/>
+        <polygon points="168,110 170,116 176,110 170,104" opacity="0.5"/>
+      </g>
+      
+    </svg>`,
+
+    Level4: `<svg viewBox="0 0 200 170" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bg4" cx="50%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#4fc3f7"/>
+          <stop offset="100%" stop-color="#0d47a1"/>
+        </radialGradient>
+        <radialGradient id="trophy4" cx="35%" cy="25%" r="65%">
+          <stop offset="0%" stop-color="#e3f2fd"/>
+          <stop offset="40%" stop-color="#64b5f6"/>
+          <stop offset="100%" stop-color="#1565c0"/>
+        </radialGradient>
+        <filter id="shadow4"><feDropShadow dx="2" dy="5" stdDeviation="4" flood-color="rgba(0,0,0,0.4)"/></filter>
+        <filter id="glow4"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="200" height="170" fill="url(#bg4)"/>
+      
+   
+      <!-- 하이라이트 -->
+      <!-- 반짝임 -->
+      <g fill="white" filter="url(#glow4)">
+        <polygon points="35,30 37,37 44,30 37,23" opacity="0.8"/>
+        <polygon points="162,20 164,26 170,20 164,14" opacity="0.7"/>
+        <polygon points="170,115 172,121 178,115 172,109" opacity="0.5"/>
+        <circle cx="42" cy="110" r="3" opacity="0.6"/>
+      </g>
+      
+    </svg>`
+  };
+
+  var recommendCards = [
+    { label:'Level1', color:'card-pink',   age:'5세' },
+    { label:'Level2', color:'card-blue',   age:'6세' },
+    { label:'Level3', color:'card-purple', age:'7세' },
+    { label:'Level4', color:'card-orange', age:'옵션' },
+  ];
+
+  var levelIssues = {
+    Level1: [
+      { emoji:'🐶', label:'1호',  color:'w-pink'   },
+      { emoji:'🍎', label:'2호',  color:'w-blue'   },
+      { emoji:'🎨', label:'3호',  color:'w-orange' },
+      { emoji:'👨‍👩‍👧', label:'4호', color:'w-green'  },
+      { emoji:'🏠', label:'5호',  color:'w-purple' },
+      { emoji:'🚗', label:'6호',  color:'w-teal'   },
+      { emoji:'⛅', label:'7호',  color:'w-red'    },
+      { emoji:'🎒', label:'8호',  color:'w-amber'  },
+      { emoji:'🏃', label:'9호',  color:'w-pink'   },
+      { emoji:'🎉', label:'10호', color:'w-blue'   },
+    ],
+    Level2: [
+      { emoji:'🐱', label:'1호',  color:'w-blue'   },
+      { emoji:'🥦', label:'2호',  color:'w-green'  },
+      { emoji:'🔢', label:'3호',  color:'w-orange' },
+      { emoji:'👕', label:'4호',  color:'w-purple' },
+      { emoji:'🌍', label:'5호',  color:'w-teal'   },
+      { emoji:'🎸', label:'6호',  color:'w-red'    },
+      { emoji:'🏖️', label:'7호',  color:'w-amber'  },
+      { emoji:'💊', label:'8호',  color:'w-pink'   },
+      { emoji:'🛒', label:'9호',  color:'w-blue'   },
+      { emoji:'🌟', label:'10호', color:'w-green'  },
+    ],
+    Level3: [
+      { emoji:'🦁', label:'1호',  color:'w-orange' },
+      { emoji:'🍕', label:'2호',  color:'w-red'    },
+      { emoji:'📖', label:'3호',  color:'w-blue'   },
+      { emoji:'🎭', label:'4호',  color:'w-purple' },
+      { emoji:'🔭', label:'5호',  color:'w-teal'   },
+      { emoji:'🗺️', label:'6호',  color:'w-green'  },
+      { emoji:'⚽', label:'7호',  color:'w-amber'  },
+      { emoji:'🎨', label:'8호',  color:'w-pink'   },
+      { emoji:'🤖', label:'9호',  color:'w-orange' },
+      { emoji:'🚀', label:'10호', color:'w-blue'   },
+    ],
+    Level4: [
+      { emoji:'📰', label:'1호',  color:'w-red'    },
+      { emoji:'💼', label:'2호',  color:'w-purple' },
+      { emoji:'🏛️', label:'3호',  color:'w-teal'   },
+      { emoji:'🌿', label:'4호',  color:'w-green'  },
+      { emoji:'💡', label:'5호',  color:'w-amber'  },
+      { emoji:'🎓', label:'6호',  color:'w-blue'   },
+      { emoji:'🌐', label:'7호',  color:'w-orange' },
+      { emoji:'📊', label:'8호',  color:'w-pink'   },
+      { emoji:'🤝', label:'9호',  color:'w-red'    },
+      { emoji:'🏅', label:'10호', color:'w-purple' },
+    ],
+  };
+
+  /* ══ TOAST ══ */
+  var toastTimer;
+  function showToast(msg) {
+    clearTimeout(toastTimer);
+    $('#toast').text(msg).addClass('show');
+    toastTimer = setTimeout(function(){ $('#toast').removeClass('show'); }, 2200);
+  }
+
+  /* ══ SLIDER FACTORY ══ */
+  function makeSlider(wrapId, trackId, dotsId, clickSel, onClickCb) {
+    var $wrap   = $('#' + wrapId);
+    var $track  = $('#' + trackId);
+    var $dotsEl = $('#' + dotsId);
+    var GAP = 14;
+    var dragging=false, startX=0, startOffset=0, liveX=0, offset=0, moved=false;
+    var touchId=null;
+
+    function itemW() {
+      var $f = $track.children().first();
+      return $f.length ? ($f.outerWidth() + GAP) : 214;
+    }
+    function maxOff() {
+      return Math.max(0, $track.children().length * itemW() - GAP - $wrap.width());
+    }
+    function clamp(x) { return Math.max(-maxOff(), Math.min(0, x)); }
+    function snap(x)  { return clamp(Math.round(x / itemW()) * itemW()); }
+    function move(x, animate) {
+      if (animate) $track.removeClass('no-anim');
+      else         $track.addClass('no-anim');
+      $track.css('transform', 'translateX(' + x + 'px)');
+      offset = x; updateDots();
+    }
+    function buildDots() {
+      $dotsEl.empty();
+      var n = $track.children().length;
+      for (var i=0; i<n; i++) $('<div class="lk-dot">').appendTo($dotsEl);
+      updateDots();
+    }
+    function updateDots() {
+      var iw  = itemW() || 1;
+      var idx = Math.max(0, Math.min($track.children().length-1, Math.round(-offset/iw)));
+      $dotsEl.find('.lk-dot').removeClass('active').eq(idx).addClass('active');
+    }
+    function reset() { move(0, false); buildDots(); }
+
+    /* mouse */
+    $wrap.on('mousedown', function(e){
+      dragging=true; moved=false; startX=e.clientX; startOffset=offset; liveX=offset;
+      $wrap.addClass('dragging'); $track.addClass('no-anim'); e.preventDefault();
+    });
+    $(document).on('mousemove.s_'+wrapId, function(e){
+      if (!dragging) return;
+      var dx=e.clientX-startX; if(Math.abs(dx)>4) moved=true;
+      var nx=startOffset+dx;
+      if(nx>0) nx=nx*0.25; if(nx<-maxOff()) nx=-maxOff()+(nx+maxOff())*0.25;
+      $track.css('transform','translateX('+nx+'px)'); liveX=nx; updateDots();
+    });
+    $(document).on('mouseup.s_'+wrapId, function(){
+      if(!dragging) return;
+      dragging=false; $wrap.removeClass('dragging'); move(snap(liveX),true);
+    });
+
+    /* touch */
+    $wrap[0].addEventListener('touchstart', function(e){
+      var t=e.changedTouches[0]; touchId=t.identifier;
+      startX=t.clientX; startOffset=offset; liveX=offset; moved=false;
+      $track.addClass('no-anim');
+    },{passive:true});
+    $wrap[0].addEventListener('touchmove', function(e){
+      var t=null;
+      for(var i=0;i<e.changedTouches.length;i++)
+        if(e.changedTouches[i].identifier===touchId){t=e.changedTouches[i];break;}
+      if(!t) return;
+      var dx=t.clientX-startX; if(Math.abs(dx)>5){moved=true;e.preventDefault();}
+      var nx=startOffset+dx;
+      if(nx>0) nx=nx*0.25; if(nx<-maxOff()) nx=-maxOff()+(nx+maxOff())*0.25;
+      $track.css('transform','translateX('+nx+'px)'); liveX=nx; updateDots();
+    },{passive:false});
+    $wrap[0].addEventListener('touchend', function(){
+      move(snap(liveX),true);
+    },{passive:true});
+
+    /* click */
+    $wrap.on('click', clickSel, function(){
+      if (moved) return;
+      if (onClickCb) onClickCb($(this));
+    });
+
+    buildDots();
+    return { reset:reset, buildDots:buildDots };
+  }
+
+  /* ══ 레벨 카드 렌더 + 슬라이더 ══ */
+  $.each(recommendCards, function(i, c){
+    var $el = $('<div class="lk-card" data-label="'+c.label+'">');
+    $el.append('<div class="lk-card-bg '+c.color+'">'+ levelSVGs[c.label] +'<div class="lk-card-label"><span class="tag">'+c.label+'</span></div><div class="card-age-badge">'+c.age+'</div></div>');
+    $('#recommend-row').append($el);
+  });
+
+  makeSlider('recommend-wrap','recommend-row','recommend-dots','.lk-card', function($el){
+    goWorldsPage($el.data('label'));
+  });
+
+  /* ══ 1호~10호 슬라이더 ══ */
+  var worldSlider = makeSlider('worlds-wrap','worlds-row','worlds-dots','.lk-world-item', function($el){
+    $('.lk-world-item').removeClass('selected');
+    $el.addClass('selected');
+    goContentPage(currentLevel, $el.data('label'));
+  });
+
+  /* ══ 화면 전환 ══ */
+  var currentLevel = null;
+  var currentIssue = null;
+
+  /* ──────────────────────────────────────
+     7개 섹션 데이터 (레벨·호수 공통 구조)
+     실제 서비스 시 레벨/호수별로 분기 가능
+  ────────────────────────────────────── */
+  var contentSections = [
+    {
+      title: '문자 학습', titleEn: 'ALPHABET',
+      cards: [
+        { title:'THE\nALPHABET', sub:'A to Z', deco:'🔤', color:'cc-sky'    },
+        { title:'LETTER\nSOUNDS', sub:'Phonics', deco:'🔊', color:'cc-yellow' },
+        { title:'UPPERCASE\nLETTERS', sub:'Big Letters', deco:'🅰️', color:'cc-green'  },
+        { title:'LOWERCASE\nLETTERS', sub:'Small Letters', deco:'📝', color:'cc-orange' },
+      ]
+    },
+    {
+      title: '단어', titleEn: 'WORDS',
+      cards: [
+        { title:'ANIMALS', sub:'Vocabulary', deco:'🐶', color:'cc-pink'   },
+        { title:'FOOD\n& DRINK', sub:'Vocabulary', deco:'🍎', color:'cc-yellow' },
+        { title:'COLORS', sub:'Vocabulary', deco:'🎨', color:'cc-purple'  },
+        { title:'NUMBERS', sub:'1 to 10', deco:'🔢', color:'cc-teal'   },
+        { title:'FAMILY', sub:'Vocabulary', deco:'👨‍👩‍👧', color:'cc-orange' },
+      ]
+    },
+    {
+      title: '노래', titleEn: 'SONGS',
+      cards: [
+        { title:'HELLO\nSONG', sub:'Greeting', deco:'👋', color:'cc-yellow' },
+        { title:'ABC\nSONG', sub:'Alphabet', deco:'🎵', color:'cc-sky'    },
+        { title:'GOODBYE\nSONG', sub:'Farewell', deco:'🎶', color:'cc-pink'   },
+        { title:'NUMBER\nSONG', sub:'Counting', deco:'🎤', color:'cc-green'  },
+      ]
+    },
+    {
+      title: '영상', titleEn: 'VIDEOS',
+      cards: [
+        { title:'STORY\nTIME', sub:'Episode 1', deco:'📖', color:'cc-purple'  },
+        { title:'CARTOON', sub:'Episode 2', deco:'🎬', color:'cc-orange' },
+        { title:'ANIMATION', sub:'Episode 3', deco:'🎥', color:'cc-red'    },
+        { title:'LIVE ACTION', sub:'Episode 4', deco:'📽️', color:'cc-teal'   },
+      ]
+    },
+    {
+      title: '게임', titleEn: 'GAMES',
+      cards: [
+        { title:'MATCH\nGAME', sub:'Memory', deco:'🃏', color:'cc-yellow' },
+        { title:'WORD\nPUZZLE', sub:'Spelling', deco:'🧩', color:'cc-sky'    },
+        { title:'QUIZ\nTIME', sub:'Q&A', deco:'❓', color:'cc-pink'   },
+        { title:'TRACE\n& WRITE', sub:'Writing', deco:'✏️', color:'cc-green'  },
+      ]
+    },
+    {
+      title: '읽기', titleEn: 'READING',
+      cards: [
+        { title:'E-BOOK\nVol.1', sub:'Story', deco:'📚', color:'cc-indigo' },
+        { title:'E-BOOK\nVol.2', sub:'Story', deco:'📕', color:'cc-orange' },
+        { title:'READERS', sub:'Graded', deco:'📗', color:'cc-teal'   },
+        { title:'MAGAZINE', sub:'Monthly', deco:'📰', color:'cc-purple'  },
+      ]
+    },
+    {
+      title: '인강', titleEn: 'LECTURES',
+      cards: [
+        { title:'STORY\nLECTURE', sub:'8 Lessons', deco:'🎓', color:'cc-pink'   },
+        { title:'READERS\nLECTURE', sub:'8 Lessons', deco:'👩‍🏫', color:'cc-yellow' },
+        { title:'MAGAZINE\nLECTURE', sub:'4 Lessons', deco:'🖥️', color:'cc-sky'    },
+        { title:'REVIEW', sub:'Summary', deco:'⭐', color:'cc-green'  },
+      ]
+    },
+  ];
+
+  /* ── 콘텐츠 섹션 슬라이더들 관리 ── */
+  var contentSliders = [];
+
+  function renderContentPage(level, issue) {
+    var $wrap = $('#content-sections').empty();
+    contentSliders = [];
+
+    $.each(contentSections, function(si, sec) {
+      /* 섹션 타이틀 */
+      var $sec = $('<div class="ct-section">');
+      $sec.append('<div class="ct-section-title">' + sec.title + ' <span>' + sec.titleEn + '</span></div>');
+
+      /* 슬라이더 래퍼 */
+      var wrapId  = 'ct-wrap-' + si;
+      var trackId = 'ct-track-' + si;
+      var dotsId  = 'ct-dots-' + si;
+
+      var $sliderWrap = $('<div class="lk-slider-wrap" id="' + wrapId + '">');
+      var $track = $('<div class="lk-slider-track" id="' + trackId + '">');
+
+      /* 카드 렌더 */
+      $.each(sec.cards, function(ci, card) {
+        var lines = card.title.split('\n');
+        var titleHtml = lines.join('<br>');
+        var $card = $('<div class="ct-card ' + card.color + '" data-label="' + card.title.replace('\n',' ') + '">');
+        $card.append(
+          '<div class="ct-card-inner">' +
+            '<div class="ct-card-deco">' + card.deco + '</div>' +
+            '<div class="ct-card-title">' + titleHtml + '</div>' +
+            '<div class="ct-card-sub">' + card.sub + '</div>' +
+          '</div>'
+        );
+        $track.append($card);
+      });
+
+      $sliderWrap.append($track);
+      $sec.append($sliderWrap);
+      $sec.append('<div class="lk-dots" id="' + dotsId + '">');
+      $wrap.append($sec);
+
+      /* 섹션 구분선 (마지막 제외) */
+      if (si < contentSections.length - 1) {
+        $wrap.append('<div class="ct-divider">');
+      }
+
+      /* 슬라이더 등록 (DOM에 붙은 후 실행해야 outerWidth 정확) */
+      contentSliders.push({ wrapId:wrapId, trackId:trackId, dotsId:dotsId });
+    });
+
+    /* DOM 렌더 완료 후 슬라이더 초기화 */
+    setTimeout(function() {
+      $.each(contentSliders, function(i, ids) {
+        makeSlider(ids.wrapId, ids.trackId, ids.dotsId, '.ct-card', function($el) {
+          showToast('▶ ' + $el.data('label'));
+        });
+      });
+    }, 30);
+  }
+
+  /* 레벨별 히어로 배너 색상·이모지 */
+  var heroTheme = {
+    Level1: { bg:'linear-gradient(135deg,#f06292 0%,#c2185b 40%,#880e4f 100%)', emoji:'🌱' },
+    Level2: { bg:'linear-gradient(135deg,#42a5f5 0%,#1565c0 40%,#0d47a1 100%)', emoji:'🌿' },
+    Level3: { bg:'linear-gradient(135deg,#66bb6a 0%,#2e7d32 40%,#1b5e20 100%)', emoji:'🌳' },
+    Level4: { bg:'linear-gradient(135deg,#ffa726 0%,#e65100 40%,#bf360c 100%)', emoji:'🏆' },
+  };
+
+  function goContentPage(level, issue) {
+    currentIssue = issue;
+
+    /* 히어로 배너 업데이트 */
+    var theme = heroTheme[level] || heroTheme.Level1;
+    $('#ct-hero').css('background', theme.bg);
+    $('#ct-hero-label').text('WEENG CLASS');
+    $('#ct-hero-name').text(level);
+    $('#ct-hero-issue').text(issue);
+    $('#ct-hero-emoji').text(theme.emoji);
+
+    /* 콘텐츠 렌더 */
+    renderContentPage(level, issue);
+
+    /* 화면 전환 */
+    $('#page-worlds').removeClass('active');
+    $('#page-content').addClass('active');
+
+    /* Page 3에서는 하단 nav 숨김 */
+    $('#bottom-nav').removeClass('visible');
+
+    window.scrollTo(0, 0);
+  }
+
+  function goWorldsPage(level) {
+    currentLevel = level;
+
+    /* 헤더 타이틀 */
+    $('#worlds-logo').text(level);
+    // $('#worlds-title').text(level + '  —  1호 ~ 10호');
+
+    /* 해당 레벨 원형 아이템 렌더 */
+    var $row = $('#worlds-row').empty();
+    $.each(levelIssues[level], function(i, w){
+      var $el = $('<div class="lk-world-item" data-label="'+w.label+'">');
+      $el.append('<div class="lk-world-circle '+w.color+'">'+w.label+'</div>');
+      $el.append('<div class="lk-world-label">'+w.label+'</div>');
+      $row.append($el);
+    });
+    worldSlider.reset();
+
+    /* 하단 nav 활성 탭 */
+    $('.lk-nav-item').removeClass('active');
+    $('.lk-nav-item[data-tab="'+level+'"]').addClass('active');
+
+    /* 화면 전환 */
+    $('#page-home').removeClass('active');
+    $('#page-content').removeClass('active');
+    $('#page-worlds').addClass('active');
+
+    /* 하단 nav 슬라이드 업 */
+    $('#bottom-nav').addClass('visible');
+
+    /* 스크롤 맨 위로 */
+    window.scrollTo(0, 0);
+  }
+
+  function goHomePage() {
+    $('#page-worlds').removeClass('active');
+    $('#page-content').removeClass('active');
+    $('#page-home').addClass('active');
+    $('#bottom-nav').removeClass('visible');
+    window.scrollTo(0, 0);
+  }
+
+  /* 뒤로가기 — Page 2 */
+  $('#back-btn').on('click', function(){ goHomePage(); });
+
+  /* 뒤로가기 — Page 3 → Page 2 */
+  $('#back-btn2').on('click', function(){
+    $('#page-content').removeClass('active');
+    $('#page-worlds').addClass('active');
+    $('#bottom-nav').addClass('visible');
+    window.scrollTo(0, 0);
+  });
+
+  /* 하단 nav 탭 → 다른 레벨로 바로 전환 */
+  $(document).on('click', '.lk-nav-item', function(){
+    var level = $(this).data('tab');
+    if (level !== currentLevel) goWorldsPage(level);
+  });
+
+  /* 헤더 버튼 */
+  $('#plus-btn').on('click',   function(){ showToast('⭐ Plus 구독 페이지!'); });
+  $('#search-btn').on('click', function(){ showToast('🔍 검색'); });
+  $('#heart-btn').on('click',  function(){
+    $(this).text('❤️'); showToast('❤️ 즐겨찾기 추가!');
+    setTimeout(function(){ $('#heart-btn').text('🤍'); }, 2000);
+  });
+  $('#avatar-btn').on('click', function(){ showToast('👤 프로필'); });
+
+  $(window).on('resize', function(){
+    $('#recommend-row,#worlds-row').css('transform','translateX(0px)');
+    $('#recommend-dots .lk-dot,#worlds-dots .lk-dot').removeClass('active').first().addClass('active');
+  });
+
+});
+</script>
+</body>
+</html>
